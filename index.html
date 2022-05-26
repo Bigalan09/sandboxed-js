@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Monaco editor</title>
+    <title>Script</title>
     <link rel="stylesheet" data-name="vs/editor/editor.main"
         href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css">
 </head>
@@ -24,7 +24,7 @@
             });
         });
 
-               const sandboxProxies = new WeakMap()
+        const sandboxProxies = new WeakMap()
 
         function compileCode(src) {
             src = 'with (sandbox) {' + src + '}'
@@ -47,6 +47,9 @@
             if (key === Symbol.unscopables) return undefined
             return target[key]
         }
+
+        var code = compileCode('function add (a, b) { return a + b; }');
+        code({ add: { a: 5, b: 6 } });
     </script>
 </body>
 
