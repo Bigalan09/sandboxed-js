@@ -45,6 +45,10 @@
             font-style: italic;
         }
 
+        strong {
+            font-weight: 800;
+        }
+
         @media only screen and (max-width: 600px) {
             #container {
                 height: 150px;
@@ -68,13 +72,30 @@
         </div>
         <div id="container"></div>
         <div id="docs">
-            <p><em>NOTE: Open Console to view output.</em></p>
             <code><pre id="context-doc">
 Loading docs...
 </pre></code>
+            <br />
+            <p><strong>Console:</strong><br /></p>
+            <code><pre id="log"></pre></code>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+    <script>
+        (function () {
+            var old = console.log;
+            var logger = document.getElementById('log');
+            console.log = function () {
+                for (var i = 0; i < arguments.length; i++) {
+                    if (typeof arguments[i] == 'object') {
+                        logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(arguments[i], undefined, 2) : arguments[i]) + '<br />';
+                    } else {
+                        logger.innerHTML += arguments[i] + '<br />';
+                    }
+                }
+            }
+        })();
+    </script>
     <script>
         // require is provided by loader.min.js.
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } });
