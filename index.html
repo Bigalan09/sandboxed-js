@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Script</title>
+    <title>Sandboxed JS Compiler</title>
     <link rel="stylesheet" data-name="vs/editor/editor.main"
         href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
@@ -18,6 +18,11 @@
             font-family: 'Montserrat', sans-serif;
             font-size: 14px;
             line-height: 1.75rem;
+        }
+
+        #container {
+            height: 300px;
+            border: 1px solid black;
         }
 
         .container {
@@ -39,6 +44,19 @@
         em {
             font-style: italic;
         }
+
+        @media only screen and (max-width: 600px) {
+            #container {
+                height: 150px;
+                border: 1px solid black;
+            }
+
+            .container {
+                width: 100%;
+                height: 100%;
+                margin: 0.5rem;
+            }
+        }
     </style>
 </head>
 
@@ -48,13 +66,11 @@
         <div id="toolbar">
             <button id="save">Run (CTRL + S)</button>
         </div>
-        <div id="container" style="height:400px;border:1px solid black;"></div>
+        <div id="container"></div>
         <div id="docs">
-            <p><em>NOTE: Go into the console to see the output.</em></p>
-            <code><pre>
-const context = {
-    do: async(num1) => { return num1 + 5; },
-}
+            <p><em>NOTE: Open Console to view output.</em></p>
+            <code><pre id="context-doc">
+Loading docs...
 </pre></code>
         </div>
     </div>
@@ -66,7 +82,8 @@ const context = {
             const editor = monaco.editor.create(document.getElementById('container'), {
                 value: `async function main(context)
 {
-    return context.do(5);
+    context.addComponent({id: 1, modifiers: ["flippable"]});
+    return context.getComponent(1);
 }`,
                 language: 'javascript',
                 theme: 'vs-dark',
@@ -80,13 +97,18 @@ const context = {
 
         const contextApi = `
 const context = {
-    do: async(num1) => { return num1 + 5; },
+    components: [],
+    getComponent: async(id) => { return self.components[id]; },
+    addComponent: async(component) => { self.components[component.id] = component; },
 }
 `;
+        const docs = document.querySelector('#context-doc');
+        docs.innerHTML = contextApi;
+
         const sandboxProxies = new WeakMap()
 
         function compileCode(src) {
-            src = 'with (sandbox) {' + contextApi + src + ' return main(context);}'
+            src = 'with (sandbox) {' + contextApi + '; const self = context; ' + src + ' return main(context);}'
             const code = new Function('sandbox', src)
 
             return function (sandbox) {
