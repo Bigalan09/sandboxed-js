@@ -69,6 +69,7 @@
         <h1>Sandboxed JS Compiler</h1>
         <div id="toolbar">
             <button id="save">Run (CTRL + S)</button>
+            <button id="clear">Clear console</button>
         </div>
         <div id="container"></div>
         <div id="docs">
@@ -95,8 +96,7 @@ Loading docs...
                 }
             }
         })();
-    </script>
-    <script>
+
         // require is provided by loader.min.js.
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } });
         require(["vs/editor/editor.main"], () => {
@@ -152,6 +152,14 @@ const context = {
 
         const savebtn = document.querySelector('#save');
         savebtn.addEventListener('click', () => save());
+
+        const clearbtn = document.querySelector('#clear');
+        savebtn.addEventListener('click', () => clear());
+
+        function clear() {
+            var logger = document.querySelector('#log');
+            logger.innerHTML = "";
+        }
 
         function save(code) {
             if (!code) {
