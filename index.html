@@ -20,9 +20,15 @@
             line-height: 1.75rem;
         }
 
-        #container {
+        #container,
+        #log {
             height: 300px;
             border: 1px solid black;
+        }
+
+        #log {
+            overflow-x: none;
+            overflow-y: auto;
         }
 
         .container {
@@ -94,9 +100,11 @@ Loading docs...
                         logger.innerHTML += arguments[i] + '<br />';
                     }
                 }
+                logger.scrollTop = logger.scrollHeight;
             }
         })();
-
+    </script>
+    <script>
         // require is provided by loader.min.js.
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } });
         require(["vs/editor/editor.main"], () => {
@@ -154,9 +162,9 @@ const context = {
         savebtn.addEventListener('click', () => save());
 
         const clearbtn = document.querySelector('#clear');
-        savebtn.addEventListener('click', () => clear());
+        clearbtn.addEventListener('click', () => clearLog());
 
-        function clear() {
+        function clearLog() {
             var logger = document.querySelector('#log');
             logger.innerHTML = "";
         }
